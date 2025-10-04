@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"os"
 
 	"github.com/KubaRocks/blog-aggregator/internal/config"
 )
@@ -12,16 +12,27 @@ func main() {
 	if err != nil {
 		log.Fatalf("error reading config: %v", err)
 	}
-	fmt.Printf("Read config: %+v\n", cfg)
 
-	err = cfg.SetUser("kuba")
-	if err != nil {
-		log.Fatalf("couldn't set current user: %v", err)
+	programState := &state{
+		cfg: &cfg,
 	}
 
-	cfg, err = config.Read()
-	if err != nil {
-		log.Fatalf("error reading config: %v", err)
+	commands := commands{
+		handlers: make(map[string]func(*state, command) error),
 	}
-	fmt.Printf("Read config again: %+v\n", cfg)
+
+	commands.register("login", handlerLogin)
+
+	if len(os.Args) < 2 {
+		log.Fatal("Usage: cli <command> [args...]")
+	}
+
+	cmd := command{
+		Name: os.Args[1],
+		Args: os.Args[2:],
+	}
+	err = commands.run(programState, cmd)
+	if err != nil {
+		log.Fatalf("error running command: %v", err)
+	}
 }

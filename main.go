@@ -1,10 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"log"
 	"os"
 
 	"github.com/KubaRocks/blog-aggregator/internal/config"
+	"github.com/KubaRocks/blog-aggregator/internal/database"
+
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -13,8 +17,15 @@ func main() {
 		log.Fatalf("error reading config: %v", err)
 	}
 
+	db, err := sql.Open("postgres", cfg.DbURL)
+	if err != nil {
+		log.Fatalf("error connectiong to DB: %v", err)
+	}
+	dbQueries := database.New(db)
+
 	programState := &state{
 		cfg: &cfg,
+		db:  dbQueries,
 	}
 
 	commands := commands{
@@ -22,6 +33,7 @@ func main() {
 	}
 
 	commands.register("login", handlerLogin)
+	commands.register("register", handlerRegister)
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")

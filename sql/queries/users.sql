@@ -14,3 +14,5 @@ SELECT *
  WHERE name LIKE $1
  LIMIT 1;
  
+-- name: DeleteAll :exec
+TRUNCATE TABLE users;

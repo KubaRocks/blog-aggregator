@@ -16,3 +16,7 @@ SELECT *
  
 -- name: DeleteAll :exec
 TRUNCATE TABLE users;
+
+-- name: GetUsers :many
+SELECT *
+  FROM users;

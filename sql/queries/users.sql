@@ -14,8 +14,8 @@ SELECT *
  WHERE name LIKE $1
  LIMIT 1;
  
--- name: DeleteAll :exec
-TRUNCATE TABLE users;
+-- name: DeleteAllUsers :exec
+TRUNCATE TABLE users CASCADE;
 
 -- name: GetUsers :many
 SELECT *

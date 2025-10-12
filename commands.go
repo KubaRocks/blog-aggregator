@@ -5,7 +5,7 @@ import "fmt"
 func (c *commands) run(s *state, cmd command) error {
 	h, exists := c.handlers[cmd.Name]
 	if !exists {
-		return fmt.Errorf("Command '%s' not registered", cmd.Name)
+		return fmt.Errorf("command '%s' not registered", cmd.Name)
 	}
 
 	return h(s, cmd)

@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+
+	"github.com/KubaRocks/blog-aggregator/internal/database"
 )
 
-func handlerFollowing(s *state, cmd command) error {
-	following, err := s.db.GetFeedFollowsForUser(context.Background(), s.cfg.CurrentUsername)
+func handlerFollowing(s *state, cmd command, user database.User) error {
+	following, err := s.db.GetFeedFollowsForUser(context.Background(), user.Name)
 	if err != nil {
 		return fmt.Errorf("failed to fetch following feeds: %v", err)
 	}

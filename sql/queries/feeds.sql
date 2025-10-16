@@ -18,3 +18,6 @@ SELECT f.*, u.name as user_name
   FROM feeds f
   JOIN users u ON f.user_id = u.id
 ;
+
+-- name: GetFeed :one
+SELECT * FROM feeds WHERE url LIKE $1;

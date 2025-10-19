@@ -22,6 +22,7 @@ func handlerAgg(s *state, cmd command) error {
 	ticker := time.NewTicker(timeBetweenRequests)
 	for ; ; <-ticker.C {
 		scrapeFeeds(s)
+		log.Printf("waiting %s for next fetch", timeBetweenRequests)
 	}
 }
 

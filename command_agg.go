@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/KubaRocks/blog-aggregator/internal/database"
+	"github.com/google/uuid"
 )
 
 func handlerAgg(s *state, cmd command) error {
@@ -52,10 +53,19 @@ func scrapeFeed(db *database.Queries, dbFeed database.Feed) error {
 		return fmt.Errorf("failed to mark feed as fetched: %v", err)
 	}
 
-	fmt.Printf("\n----------------\nPrinting Items from %s\n----------------\n\n", feed.Channel.Title)
-
 	for _, feedItem := range feed.Channel.Item {
-		fmt.Printf("* %s\n", feedItem.Title)
+		pubAt, _ := time.Parse(time.RFC1123Z, feedItem.PubDate)
+		_, err := db.CreatePost(context.Background(), database.CreatePostParams{
+			ID:          uuid.New(),
+			Title:       ToNullString(feedItem.Title),
+			PublishedAt: pubAt.UTC(),
+			Description: ToNullString(feedItem.Description),
+			Url:         feedItem.Link,
+			FeedID:      dbFeed.ID,
+		})
+		if err != nil {
+			log.Printf("failed to store post (%v) to db. Error: %v", feedItem.Link, err)
+		}
 	}
 	log.Printf("Feed %s collected, %v posts found", dbFeed.Name, len(feed.Channel.Item))
 
